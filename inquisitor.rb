@@ -88,8 +88,14 @@ def fetch_jira_issues(client, project, fixversion)
   known_issues
 end
 
-if !(ENV['JIRA_USERNAME'] and ENV['JIRA_PASSWORD'])
-  $stderr.puts "Error: JIRA_USERNAME and JIRA_PASSWORD environment variables must be set"
+if !ENV['JIRA_USERNAME']
+  $stderr.puts "Error: JIRA_USERNAME environment variable must be set"
+  usage
+  exit 1
+end
+
+if !ENV['JIRA_PASSWORD']
+  $stderr.puts "Error: JIRA_PASSWORD environment variable must be set"
   usage
   exit 1
 end

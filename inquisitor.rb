@@ -29,7 +29,7 @@ Examples:
     #
     # Inquire about all commits between the 3.6.2 tag and the 'master' branch,
     # and compare against issues with a fixVersion of '3.7.0' in the PUP project.
-    #{File.basename($0)} ~/src/facter FACT 2.0.2 HEAD 2.1.0"
+    #{File.basename($0)} ~/src/puppet PUP 3.6.2 master 3.7.0"
   EOD
 
   $stderr.puts usage

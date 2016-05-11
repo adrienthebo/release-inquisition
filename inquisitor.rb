@@ -13,6 +13,18 @@ require 'jira'
 require 'colored'
 require 'json'
 
+# Utility to retrieve command line input
+# @param noecho [Boolean, nil] if we are retrieving command line input with or without privacy. This is mainly
+#   for sensitive information like passwords.
+def get_input(echo = true)
+  fail "Cannot get input on a noninteractive terminal" unless $stdin.tty?
+
+  system 'stty -echo' unless echo
+  $stdin.gets.chomp!
+ensure
+  system 'stty echo'
+end
+
 def usage
   usage = <<-EOD
 Usage: #{File.basename($0)} [path to git repo] [JIRA project] [start commit] [end commit] [JIRA version]
@@ -94,12 +106,6 @@ if !ENV['JIRA_USERNAME']
   exit 1
 end
 
-if !ENV['JIRA_PASSWORD']
-  $stderr.puts "Error: JIRA_PASSWORD environment variable must be set"
-  usage
-  exit 1
-end
-
 if ARGV.count != 5
   $stderr.puts "Error: Wrong number of arguments"
   usage
@@ -112,10 +118,16 @@ from = ARGV[2]
 to = ARGV[3]
 fixversion = ARGV[4]
 
+jira_site = 'https://tickets.puppetlabs.com'
+puts "Logging in to #{jira_site} as #{ENV['JIRA_USERNAME']}"
+print "Password please: "
+jira_password = get_input(false)
+puts
+
 client = JIRA::Client.new(
   :username => ENV['JIRA_USERNAME'],
-  :password => ENV['JIRA_PASSWORD'],
-  :site => 'https://tickets.puppetlabs.com',
+  :password => jira_password,
+  :site => jira_site,
   :context_path => '',
   :use_ssl => true,
   :auth_type => :basic)
